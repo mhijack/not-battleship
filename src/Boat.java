@@ -1,7 +1,3 @@
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public abstract class Boat {
     private int team;
     private Coordinates location;
@@ -9,7 +5,7 @@ public abstract class Boat {
     private int health;
     private int strength;
     private int vision;
-    private final Set<String> DIRECTIONS = new HashSet<>(Arrays.asList("N", "NE", "E", "S", "SE", "W", "NW"));
+    public String[] DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
 
     public Boat(int team, Coordinates location, int direction, int health, int strength, int vision) {
         this.team = team;
@@ -20,11 +16,11 @@ public abstract class Boat {
         this.vision = vision;
     }
 
-    private int getTeam() {
+    public int getTeam() {
         return this.team;
     }
 
-    private Coordinates getLocation() {
+    public Coordinates getLocation() {
         return this.location;
     }
 
@@ -106,16 +102,17 @@ public abstract class Boat {
         int y = currentLoc.getY();
 
         Coordinates newLoc = world.getAdjacentLocation(currentLoc, this.direction);
-        if (world.isLocationValid(newLoc)) {
+        if (newLoc!= null && world.isLocationValid(newLoc)) {
             if (!world.isLocationOccupied(newLoc)) {
-                world.setOccupant(null, currentLoc);
                 world.setOccupant(this, newLoc);
-                return String.format("%s moves to %s", this.getTeam() + this.getID(), newLoc);
+                world.setOccupant(null, currentLoc);
+                this.setLocation(newLoc);
+                return String.format("%s moves to %s", this.getID(), newLoc);
             } else {
-                return String.format("%s cannot move to %s as it is occupied", this.getTeam() + this.getID(), newLoc);
+                return String.format("%s cannot move to %s as it is occupied", this.getID(), newLoc);
             }
         } else {
-            return String.format("%s cannot move off the map.", this.getTeam() + this.getID());
+            return String.format("%s cannot move off the map.", this.getID());
         }
     }
 
@@ -125,30 +122,30 @@ public abstract class Boat {
      **/
     public String turn(int leftOrRight) {
         int newDirection;
-        String result = String.format("%s turned ", this.getTeam() + this.getID());
+        String result = String.format("%s turned ", this.getID());
 
         if (leftOrRight == -1) {
             if (this.direction == 0) newDirection = 8 - 1;
             else                     newDirection = this.direction - 1;
             result += "left";
-        } else if (leftOrRight == 1) {
-            newDirection = this.direction + 1;
-            result += "right";
         } else {
-            newDirection = this.direction;
-            return String.format("%s did not turn.", this.getTeam() + this.getID());
+            if (this.direction == 7) newDirection = 0;
+            else                     newDirection = this.direction + 1;
+            result += "right";
         }
-        result += String.format(", now facing %s", DIRECTIONS.toArray()[this.direction]);
+        this.direction = newDirection;
+        result += String.format(", now facing %s", DIRECTIONS[this.direction]);
         return result;
     }
 
     public String takeHit(int strengthOfAttack) {
         int newHealth = this.getHealth() - strengthOfAttack;
         if (newHealth <= 0) {
-            return String.format("%s has been sunk!", this.getTeam() + this.getID());
+            this.health = 0;
+            return String.format("%s has been sunk!", this.getID());
         } else {
             this.health = newHealth;
-            return String.format("%s takes %d damage", this.getTeam() + this.getID(), strengthOfAttack);
+            return String.format("%s takes %d damage", this.getID(), strengthOfAttack);
         }
     }
 
@@ -162,6 +159,6 @@ public abstract class Boat {
 
     @Override
     public String toString() {
-        return String.format("%s", this.getTeam() + this.getID());
+        return String.format("%s", this.getID());
     }
 }

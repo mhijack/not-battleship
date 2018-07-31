@@ -1,9 +1,4 @@
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-
 public class World {
-    /*
     public static final int NORTH = 0;
     public static final int NORTHEAST = 1;
     public static final int EAST = 2;
@@ -12,9 +7,8 @@ public class World {
     public static final int SOUTHWEST = 5;
     public static final int WEST = 6;
     public static final int NORTHWEST = 7;
-    */
 
-    public Set<String> DIRECTIONS = new HashSet<>(Arrays.asList("N", "NE", "E", "S", "SE", "W", "NW"));
+    public String[] DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
     private Boat[][] map; // bottom right corner: (width, length)
 
     public World(int width, int length) {
@@ -29,7 +23,7 @@ public class World {
         } else if (length > 10) {
             length = 10;
         }
-        map = new Boat[width][length]; // (x, y)
+        map = new Boat[length][width]; // (y, x)
         for (int row = 0; row < map.length; row++) {
             for (int col = 0; col < map[row].length; col++) {
                 map[row][col] = null;
@@ -48,37 +42,37 @@ public class World {
     public Boat getOccupant(Coordinates c) {
         int x = c.getX();
         int y = c.getY();
-        return map[x][y];
+        return map[y][x];
     }
 
     public boolean isLocationValid(Coordinates c) {
         int x = c.getX();
         int y = c.getY();
-        if (x < 0 || x > map.length || y < 0 || y > map[0].length) {
+        if (x < 0 || x >= this.getWidth() || y < 0 || y >= this.getHeight())
             return false;
-        }
         return true;
     }
 
     public boolean isLocationOccupied(Coordinates c) {
         // return true if location is null; false otherwise;
-        return map[c.getX()][c.getY()] == null;
+        return map[c.getY()][c.getX()] != null;
     }
 
     public boolean setOccupant(Boat boat, Coordinates c) {
         if (isLocationValid(c)) {
-            if (!isLocationOccupied(c)) {
-                map[c.getX()][c.getY()] = boat;
+            if (boat == null || !isLocationOccupied(c)) {
+                map[c.getY()][c.getX()] = boat;
                 return true;
             }
         }
         return false;
     }
 
+    public String[] getDIRECTIONS() {
+        return this.DIRECTIONS;
+    }
+
     public Coordinates getAdjacentLocation(Coordinates c, int direction) {
-        if (!isLocationValid(c) || direction < 0 || direction > 7) {
-            return null;
-        }
         int x = c.getX();
         int y = c.getY();
         switch (direction) {
@@ -111,16 +105,17 @@ public class World {
                 y -= 1;
                 break;
             default:
-                break;
+                // invalid direction, return null;
+                return null;
         }
-        return new Coordinates(x, y);
+        Coordinates adjacentLoc = new Coordinates(x, y);
+        if (!isLocationValid(adjacentLoc)) return null;
+        return adjacentLoc;
     }
 
     public String drawTeamMap(Boat[] teamBoats, int view)
     {
-        /*** NOTE: For this implementation, we will provide a general strategy and ask you to complete
-         certain tasks. The basic procedure of this method is as follows:
-
+        /***
          1) Create a two-dimensional map with all spaces marked as invisible
          2) If the view is a player view (i.e., not the in-between view):
          a) Loop through all of the current team's boats
@@ -134,7 +129,7 @@ public class World {
          ***/
         String drawMap = "";
         String[][] teamView = new String[this.getHeight()][this.getWidth()];
-        int yStart, yEnd, xStart, xEnd;
+        int yStart, yEnd, xStart, xEnd; // vision boundary
         Coordinates boatLocation;
 
         /*** TODO: Write a for-loop that repeats for each row in the map ***/
@@ -146,37 +141,65 @@ public class World {
             }
         }
 
-        if (view != 1)
-        {
+        if (view != 1) {
             /*** TODO: Write a for-loop to repeat over all of the current team's boats, storing the current
              boat in a Boat variable, b
              ***/
-            for (int row = 0; row < teamView.length; row++) {
+            for (int i = 0; i < teamBoats.length; i++) {
+                this.setOccupant(teamBoats[i], teamBoats[i].getLocation());
+            }
+            for (int i = 0; i < teamBoats.length; i++) {
+                Boat b = teamBoats[i];
+//                this.setOccupant(b, b.getLocation());
+
                 /*** TODO: Write a conditional statement checking if the current boat has more than 0 health ***/
-                {
+                if (b != null && b.getHealth() > 0) {
                     /*** TODO: Set yStart, yEnd, xStart and xEnd such that the for-loops below will iterate
                      over each visible space for the current boat, and will not produce an
                      ArrayIndexOutOfBoundsException (i.e., if a boat has vision 2, check 2 spaces
                      to the left and 2 to the right, but make sure not to index beyond the map
                      boundaries)
                      ***/
-                    for (int y = yStart; y <= yEnd; y++)
-                    {
-                        for (int x = xStart; x <= xEnd; x++)
-                        {
+
+                    int vision = b.getVision();
+                    boatLocation = b.getLocation();
+
+                    yStart = boatLocation.getY() - vision;
+                    if (yStart < 0)
+                        yStart = 0;
+
+                    yEnd = boatLocation.getY() + vision;
+                    if (yEnd > this.getHeight() - 1)
+                        yEnd = this.getHeight() - 1;
+
+                    xStart = boatLocation.getX() - vision;
+                    if (xStart < 0)
+                        xStart = 0;
+
+                    xEnd = boatLocation.getX() + vision;
+                    if (xEnd > this.getWidth() - 1)
+                        xEnd = this.getWidth() - 1;
+
+                    for (int y = yStart; y <= yEnd; y++) {
+                        for (int x = xStart; x <= xEnd; x++) {
                             /*** TODO: Write a conditional to check if the game map has nothing stored in the
                              current space (in which case, we'll store the water String)
                              ***/
-                            teamView[y][x] = "~~~";
-                            else if (((Boat)map[y][x]).getHealth() <= 0)
-                            teamView[y][x] = " ~ ";
-                        else
-                        {
-                            /*** TODO: Write a conditional and the corresponding branches that add the boat
-                             String with the appropriate information (location or direction) for
-                             each boat that can be seen by the current boat
-                             ***/
-                        }
+                            if (map[y][x] == null) {
+                                teamView[y][x] = "~~~";
+                            } else if ((map[y][x]).getHealth() <= 0) {
+                                teamView[y][x] = " ~ ";
+                            } else {
+                                /*** TODO: Write a conditional and the corresponding branches that add the boat
+                                 String with the appropriate information (location or direction) for
+                                 each boat that can be seen by the current boat
+                                 ***/
+                                String boatName = String.format("%s", map[y][x].getID());
+                                String info;
+                                if (view == 2)      info = String.format("%c", map[y][x].getDirection());
+                                else                info = String.format("%d", map[y][x].getHealth());
+                                teamView[y][x] = info + boatName;
+                            }
                         }
                     }
                 }
@@ -205,6 +228,4 @@ public class World {
 
         return drawMap;
     }
-
-
 }
