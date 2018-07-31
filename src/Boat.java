@@ -161,6 +161,6 @@ public abstract class Boat {
 
     @Override
     public String toString() {
-        return String.format("%s", this.getID());
+        return this.getID();
     }
 }

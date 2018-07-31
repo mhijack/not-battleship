@@ -1,4 +1,4 @@
-/*import java.util.Scanner;
+import java.util.Scanner;
 public class Game {
     public static void main(String[] args) {
         World ocean = new World(10,10);
@@ -70,4 +70,3 @@ public class Game {
         return true;
     }
 }
-*/
