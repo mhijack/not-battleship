@@ -53,7 +53,7 @@ public abstract class Boat {
                 arrow = 8598;
                 break;
             default:
-                arrow = 8593;
+                arrow = this.direction;
                 break;
         }
         return arrow;
@@ -104,15 +104,15 @@ public abstract class Boat {
         Coordinates newLoc = world.getAdjacentLocation(currentLoc, this.direction);
         if (newLoc!= null && world.isLocationValid(newLoc)) {
             if (!world.isLocationOccupied(newLoc)) {
-                world.setOccupant(this, newLoc);
                 world.setOccupant(null, currentLoc);
+                world.setOccupant(this, newLoc);
                 this.setLocation(newLoc);
-                return String.format("%s moves to %s", this.getID(), newLoc);
+                return String.format("%s moves from %s to %s", this.toString(), currentLoc, newLoc);
             } else {
-                return String.format("%s cannot move to %s as it is occupied", this.getID(), newLoc);
+                return String.format("%s cannot move to %s as it is occupied", this.toString(), newLoc);
             }
         } else {
-            return String.format("%s cannot move off the map.", this.getID());
+            return String.format("%s cannot move off the map.", this.toString());
         }
     }
 
@@ -122,13 +122,15 @@ public abstract class Boat {
      **/
     public String turn(int leftOrRight) {
         int newDirection;
-        String result = String.format("%s turned ", this.getID());
+        String result = String.format("%s turned ", this.toString());
 
         if (leftOrRight == -1) {
-            if (this.direction == 0) newDirection = 8 - 1;
+            // turn left
+            if (this.direction == 0) newDirection = 7;
             else                     newDirection = this.direction - 1;
             result += "left";
         } else {
+            // turn right
             if (this.direction == 7) newDirection = 0;
             else                     newDirection = this.direction + 1;
             result += "right";
@@ -142,14 +144,14 @@ public abstract class Boat {
         int newHealth = this.getHealth() - strengthOfAttack;
         if (newHealth <= 0) {
             this.health = 0;
-            return String.format("%s has been sunk!", this.getID());
+            return String.format("%s has been sunk!", this.toString());
         } else {
             this.health = newHealth;
-            return String.format("%s takes %d damage", this.getID(), strengthOfAttack);
+            return String.format("%s takes %d damage.", this.toString(), strengthOfAttack);
         }
     }
 
-    /** assumes input c is valid
+    /** assumes input Coordinates is valid
      *
      * @param c Coordinates (boat's new location)
      */

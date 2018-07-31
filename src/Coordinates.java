@@ -29,7 +29,7 @@ public class Coordinates {
     public String toString() {
         // x: 1 to 26 ( x0 = 1)
         // y: A to Z (y0 = A)
-        int xCoord = getX();
+        int xCoord = getX() + 1;
         int yCoord = 65 + getY();
         // "C7" // x = 7, y = 2
         return String.format("%c%d", yCoord, xCoord);

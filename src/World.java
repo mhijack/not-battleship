@@ -11,19 +11,19 @@ public class World {
     public String[] DIRECTIONS = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
     private Boat[][] map; // bottom right corner: (width, length)
 
-    public World(int width, int length) {
+    public World(int width, int height) {
         // width & length must be between 4 - 10;
         if (width < 4) {
             width = 4;
         } else if (width > 10) {
             width = 10;
         }
-        if (length < 4) {
-            length = 4;
-        } else if (length > 10) {
-            length = 10;
+        if (height < 4) {
+            height = 4;
+        } else if (height > 10) {
+            height = 10;
         }
-        map = new Boat[length][width]; // (y, x)
+        map = new Boat[height][width]; // (y, x)
         for (int row = 0; row < map.length; row++) {
             for (int col = 0; col < map[row].length; col++) {
                 map[row][col] = null;
@@ -55,7 +55,7 @@ public class World {
 
     public boolean isLocationOccupied(Coordinates c) {
         // return true if location is null; false otherwise;
-        return map[c.getY()][c.getX()] != null;
+        return !(map[c.getY()][c.getX()] == null);
     }
 
     public boolean setOccupant(Boat boat, Coordinates c) {
@@ -73,6 +73,7 @@ public class World {
     }
 
     public Coordinates getAdjacentLocation(Coordinates c, int direction) {
+        if (!isLocationValid(c)) return null;
         int x = c.getX();
         int y = c.getY();
         switch (direction) {
@@ -132,6 +133,10 @@ public class World {
         int yStart, yEnd, xStart, xEnd; // vision boundary
         Coordinates boatLocation;
 
+        for (int i = 0; i < teamBoats.length; i++) {
+            this.setOccupant(teamBoats[i], teamBoats[i].getLocation());
+        }
+
         /*** TODO: Write a for-loop that repeats for each row in the map ***/
         for (int row = 0; row < teamView.length; row++) {
             /*** TODO: Write a for-loop that repeats for each column in the map ***/
@@ -145,9 +150,6 @@ public class World {
             /*** TODO: Write a for-loop to repeat over all of the current team's boats, storing the current
              boat in a Boat variable, b
              ***/
-            for (int i = 0; i < teamBoats.length; i++) {
-                this.setOccupant(teamBoats[i], teamBoats[i].getLocation());
-            }
             for (int i = 0; i < teamBoats.length; i++) {
                 Boat b = teamBoats[i];
 //                this.setOccupant(b, b.getLocation());
@@ -194,7 +196,7 @@ public class World {
                                  String with the appropriate information (location or direction) for
                                  each boat that can be seen by the current boat
                                  ***/
-                                String boatName = String.format("%s", map[y][x].getID());
+                                String boatName = String.format("%s", map[y][x].toString());
                                 String info;
                                 if (view == 2)      info = String.format("%c", map[y][x].getDirection());
                                 else                info = String.format("%d", map[y][x].getHealth());
