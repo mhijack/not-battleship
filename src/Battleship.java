@@ -50,13 +50,20 @@ public class Battleship extends Boat implements Attacker {
     public String attack(World world) {
         Coordinates nextLoc = world.getAdjacentLocation(this.getLocation(), this.getIntDirection());
         String result = "Fire cannons! ";
-        if (nextLoc == null)
-            result = "There are no boats in range currently.";
-        Boat boat = world.getOccupant(nextLoc);
-        for (int i = 0; i < 2; i++) {
-            result += boat.takeHit(this.getStrength()) + "\n";
-        }
+        Set<Boat> boatsInRange = new HashSet<>();
 
+        for (int i = 0; i < this.getVision(); i++) {
+            if (world.isLocationValid(nextLoc) && world.isLocationOccupied(nextLoc)) {
+                for (int count = 0; count < 2; count++) {
+                    Boat boat = world.getOccupant(nextLoc);
+                    boatsInRange.add(boat);
+                    result += boat.takeHit(this.getStrength()) + "\n";
+                }
+            }
+            nextLoc = world.getAdjacentLocation(nextLoc, this.getIntDirection());
+        }
+        if (boatsInRange.size() == 0) result = "There are no boats in range currently.";
         return result;
     }
+
 }

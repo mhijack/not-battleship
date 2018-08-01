@@ -53,7 +53,7 @@ public class Test {
         System.out.println(b.attack(world));
         System.out.println(b.attack(world));
          */
-
+        System.out.println(b.attack(world));
 
 
         String dirMap = world.drawTeamMap(barr.toArray(arr), 2);
