@@ -43,6 +43,14 @@ public class Destroyer extends Boat implements Attacker {
         return result;
     }
 
+    /**
+     *  The Destroyer attacks ALL Boats directly in facing direction and within its vision.
+     *  If no boats are in this range, the Destroyer forfeits the current action.
+     *
+     *  @params World.
+     *
+     *  @returns String representing results of attack.
+     **/
     @Override
     public String attack(World world) {
         Coordinates nextLoc = world.getAdjacentLocation(this.getLocation(), this.getIntDirection());
@@ -53,7 +61,7 @@ public class Destroyer extends Boat implements Attacker {
             if (world.isLocationValid(nextLoc) && world.isLocationOccupied(nextLoc)) {
                 Boat boat = world.getOccupant(nextLoc);
                 boatsInRange.add(boat);
-                result += boat.takeHit(this.getStrength());
+                result += boat.takeHit(this.getStrength()) + "\n";
             }
             nextLoc = world.getAdjacentLocation(nextLoc, this.getIntDirection());
         }

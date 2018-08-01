@@ -112,7 +112,8 @@ public class Submarine extends ScoutBoat implements Attacker {
             for (int i = 0; i < this.getVision(); i++) {
                 if (world.isLocationValid(nextLoc) && world.isLocationOccupied(nextLoc)) {
                     Boat boat = world.getOccupant(nextLoc);
-                    int attack = 1 + (int)(Math.random() * ((boat.getHealth() - 1) + 1));
+                    int attack = 1 + (int) (Math.random() * boat.getHealth());
+                    this.numOfTorpedoes -= 1;
                     return "Fire torpedoes! " + boat.takeHit(attack);
                 }
                 nextLoc = world.getAdjacentLocation(nextLoc, this.getIntDirection());

@@ -24,7 +24,6 @@ public class Game {
             xPos = (int) (Math.random() * w.getWidth());
             yPos = (int) (Math.random() * w.getHeight());
         } while (w.isLocationOccupied(new Coordinates(xPos, yPos)));
-
         return new Coordinates(xPos, yPos);
     }
 

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class AircraftCarrier extends Boat implements Attacker {
     private boolean hasPlanes;
 
@@ -70,26 +73,34 @@ public class AircraftCarrier extends Boat implements Attacker {
 
             String result = "";
             double successRate = 1.0;
+            List<Boat> boatArr = new ArrayList<>();
 
             if (this.hasPlanes) {
-                for (int y = yStart; y < yEnd; y++) {
-                    for (int x = xStart; x < xEnd; x++) {
+                for (int y = yStart; y <= yEnd; y++) {
+                    for (int x = xStart; x <= xEnd; x++) {
+                        System.out.printf("CHecking coordinates %d, %d\n", x, y);
                         Coordinates currentLoc = new Coordinates(x, y);
-                        Boat occupant = world.getOccupant(currentLoc);
+                        Boat boatInVision = world.getOccupant(currentLoc);
 
-                        if (occupant != null && occupant != this) {
-                            result += occupant.takeHit(this.getStrength()) + "\n";
-                            successRate *= 0.8;
-                            if (Math.random() > successRate) {
-                                this.hasPlanes = false;
-                                return result;
-                            }
+                        if (boatInVision != null && boatInVision != this) {
+                            boatArr.add(boatInVision);
                         }
                     }
                 }
-                return result;
+                if (boatArr.size() == 0)
+                    return "There are no boats in range currently.";
+                else {
+                    for (Boat boat: boatArr) {
+                        if (Math.random() > successRate) {
+                            this.hasPlanes = false;
+                            return result + "The planes have been destroyed.";
+                        }
+                        result += boat.takeHit(this.getStrength()) + "\n";
+                        successRate *= 0.8;
+                    }
+                    return result;
+                }
             }
-            return "There are no boats in range currently.";
         }
         return this.toString() + " has no planes remaining.";
     }

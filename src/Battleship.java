@@ -42,21 +42,21 @@ public class Battleship extends Boat implements Attacker {
         return result;
     }
 
+    /**
+     *  A Battleship will attack twice any Boat that is within its vision and in the direction it is facing.
+     *  Call the Boat’s takeHit method using the Battleship’s attack strength
+     **/
     @Override
     public String attack(World world) {
         Coordinates nextLoc = world.getAdjacentLocation(this.getLocation(), this.getIntDirection());
         String result = "Fire cannons! ";
-        Set<Boat> boatsInRange = new HashSet<>();
-
-        for (int i = 0; i < this.getVision(); i++) {
-            if (world.isLocationValid(nextLoc) && world.isLocationOccupied(nextLoc)) {
-                Boat boat = world.getOccupant(nextLoc);
-                boatsInRange.add(boat);
-                result += boat.takeHit(this.getStrength());
-            }
-            nextLoc = world.getAdjacentLocation(nextLoc, this.getIntDirection());
+        if (nextLoc == null)
+            result = "There are no boats in range currently.";
+        Boat boat = world.getOccupant(nextLoc);
+        for (int i = 0; i < 2; i++) {
+            result += boat.takeHit(this.getStrength()) + "\n";
         }
-        if (boatsInRange.size() == 0) result = "There are no boats in range currently.";
+
         return result;
     }
 }
