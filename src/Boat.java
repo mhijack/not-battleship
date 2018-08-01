@@ -24,10 +24,12 @@ public abstract class Boat {
         return this.location;
     }
 
+    public int getIntDirection() { return this.direction; };
+
     /** @return integer, UTF-8 representing the direction arrow **/
     public int getDirection() {
         int arrow;
-        switch (this.direction) {
+        switch (this.getIntDirection()) {
             case 0:
                 arrow = 8593;
                 break;

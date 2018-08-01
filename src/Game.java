@@ -52,7 +52,7 @@ public class Game {
                 System.out.println("1. View map\n2. Take action with " + b[n] + "\n");
                 choices[0] = s.nextInt();
                 if (choices[0] == 1) {
-                    System.out.println("1. Direction\n2.Health\n");
+                    System.out.println("1. Direction\n2. Health\n");
                     choices[0] = s.nextInt();
                     System.out.println(w.drawTeamMap(b, choices[0] + 1));
                 } else {
