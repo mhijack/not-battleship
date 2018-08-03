@@ -65,5 +65,4 @@ public class Battleship extends Boat implements Attacker {
         if (boatsInRange.size() == 0) result = "There are no boats in range currently.";
         return result;
     }
-
 }

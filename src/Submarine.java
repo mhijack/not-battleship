@@ -20,7 +20,7 @@ public class Submarine extends ScoutBoat implements Attacker {
         userAction += "2. Turn left\n";
         userAction += "3. Turn right\n";
         userAction += "4. Submerge\n";
-        userAction += "5. Fire torpedoes\n";
+        userAction += this.numOfTorpedoes > 0 ? "5. Fire torpedoes\n" : "";
         return userAction;
     }
 

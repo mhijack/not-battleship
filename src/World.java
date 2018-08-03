@@ -13,16 +13,11 @@ public class World {
 
     public World(int width, int height) {
         // width & length must be between 4 - 10;
-        if (width < 4) {
-            width = 4;
-        } else if (width > 10) {
-            width = 10;
-        }
-        if (height < 4) {
-            height = 4;
-        } else if (height > 10) {
-            height = 10;
-        }
+        if (width < 4)          width = 4;
+        else if (width > 10)    width = 10;
+        if (height < 4)         height = 4;
+        else if (height > 10)   height = 10;
+
         map = new Boat[height][width]; // (y, x)
         for (int row = 0; row < map.length; row++) {
             for (int col = 0; col < map[row].length; col++) {
@@ -73,45 +68,45 @@ public class World {
     }
 
     public Coordinates getAdjacentLocation(Coordinates c, int direction) {
-        if (!isLocationValid(c)) return null;
+//        if (!isLocationValid(c)) return null;
         int x = c.getX();
         int y = c.getY();
         switch (direction) {
-            case 0:
+            case NORTH:
                 y -= 1;
                 break;
-            case 1:
+            case NORTHEAST:
                 x += 1;
                 y -= 1;
                 break;
-            case 2:
+            case EAST:
                 x += 1;
                 break;
-            case 3:
+            case SOUTHEAST:
                 x += 1;
                 y += 1;
                 break;
-            case 4:
+            case SOUTH:
                 y += 1;
                 break;
-            case 5:
+            case SOUTHWEST:
                 x -= 1;
                 y += 1;
                 break;
-            case 6:
+            case WEST:
                 x -= 1;
                 break;
-            case 7:
+            case NORTHWEST:
                 x -= 1;
                 y -= 1;
                 break;
             default:
                 // invalid direction, return null;
-                return null;
+                break;
         }
         Coordinates adjacentLoc = new Coordinates(x, y);
-        if (!isLocationValid(adjacentLoc)) return null;
-        return adjacentLoc;
+        if (isLocationValid(adjacentLoc)) return adjacentLoc;
+        return null;
     }
 
     public String drawTeamMap(Boat[] teamBoats, int view)
@@ -133,10 +128,6 @@ public class World {
         int yStart, yEnd, xStart, xEnd; // vision boundary
         Coordinates boatLocation;
 
-        for (int i = 0; i < teamBoats.length; i++) {
-            this.setOccupant(teamBoats[i], teamBoats[i].getLocation());
-        }
-
         /*** TODO: Write a for-loop that repeats for each row in the map ***/
         for (int row = 0; row < teamView.length; row++) {
             /*** TODO: Write a for-loop that repeats for each column in the map ***/
@@ -146,13 +137,14 @@ public class World {
             }
         }
 
+        // str += (char) (i + 'A') + " ";
+
         if (view != 1) {
             /*** TODO: Write a for-loop to repeat over all of the current team's boats, storing the current
              boat in a Boat variable, b
              ***/
             for (int i = 0; i < teamBoats.length; i++) {
                 Boat b = teamBoats[i];
-//                this.setOccupant(b, b.getLocation());
 
                 /*** TODO: Write a conditional statement checking if the current boat has more than 0 health ***/
                 if (b != null && b.getHealth() > 0) {

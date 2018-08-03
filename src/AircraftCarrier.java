@@ -20,7 +20,7 @@ public class AircraftCarrier extends Boat implements Attacker {
         userAction += "1. Move\n";
         userAction += "2. Turn left\n";
         userAction += "3. Turn right\n";
-        userAction += "4. Launch planes\n";
+        userAction += hasPlanes ? "4. Launch planes\n" : "";
         return userAction;
     }
 
@@ -75,31 +75,29 @@ public class AircraftCarrier extends Boat implements Attacker {
             double successRate = 1.0;
             List<Boat> boatArr = new ArrayList<>();
 
-            if (this.hasPlanes) {
-                for (int y = yStart; y <= yEnd; y++) {
-                    for (int x = xStart; x <= xEnd; x++) {
-                        System.out.printf("CHecking coordinates %d, %d\n", x, y);
-                        Coordinates currentLoc = new Coordinates(x, y);
-                        Boat boatInVision = world.getOccupant(currentLoc);
+            for (int y = yStart; y <= yEnd; y++) {
+                for (int x = xStart; x <= xEnd; x++) {
+                    System.out.printf("CHecking coordinates %d, %d\n", x, y);
+                    Coordinates currentLoc = new Coordinates(x, y);
+                    Boat boatInVision = world.getOccupant(currentLoc);
 
-                        if (boatInVision != null && boatInVision != this) {
-                            boatArr.add(boatInVision);
-                        }
+                    if (boatInVision != null && boatInVision != this) {
+                        boatArr.add(boatInVision);
                     }
                 }
-                if (boatArr.size() == 0)
-                    return "There are no boats in range currently.";
-                else {
-                    for (Boat boat: boatArr) {
-                        if (Math.random() > successRate) {
-                            this.hasPlanes = false;
-                            return result + "The planes have been destroyed.";
-                        }
-                        result += boat.takeHit(this.getStrength()) + "\n";
-                        successRate *= 0.8;
+            }
+            if (boatArr.size() == 0)
+                return "There are no boats in range currently.";
+            else {
+                for (Boat boat: boatArr) {
+                    if (Math.random() > successRate) {
+                        this.hasPlanes = false;
+                        return result + "The planes have been destroyed.";
                     }
-                    return result;
+                    result += boat.takeHit(this.getStrength()) + "\n";
+                    successRate *= 0.8;
                 }
+                return result;
             }
         }
         return this.toString() + " has no planes remaining.";
